@@ -99,7 +99,7 @@ exports.loginUser = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(401).json({ message: 'Invalid Email' });
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        const isPasswordMatch = bcrypt.compare(password, user.password);
         if (!isPasswordMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
         if (!user.isVerified) return res.status(401).json({ message: 'User is not verified. Please complete OTP verification.' });
