@@ -35,6 +35,8 @@ exports.registerUser = async (req, res) => {
             otp,
         });
 
+        console.log(otpRecord);
+
         await otpRecord.save(); // Save OTP to MongoDB
 
         const mailOptions = {
