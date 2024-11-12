@@ -1,0 +1,135 @@
+/* Container styles */
+.verify-otp-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(120deg, #141e30, #243b55);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/*time up message */
+
+.Time-Up{
+    position: absolute;
+    top: 72%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    font-weight: bold;
+    color: #00ffdd;
+    animation: fade-in-out 2s infinite;
+}
+
+/* Background animation based on cursor movement */
+.verify-otp-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+    transition: transform 0.05s;
+    pointer-events: none;
+}
+
+.verify-otp-container:hover::before {
+    transform: translate3d(var(--x, 0), var(--y, 0), 0);
+}
+
+/* Add mouse tracking to background */
+.verify-otp-container:hover::before {
+    animation: none;
+}
+
+/* Neon border effect */
+.verify-otp-form {
+    padding: 2rem;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: #141e30;
+    position: relative;
+    width: 300px;
+    max-width: 90%;
+    box-shadow: 0px 0px 10px rgba(0, 255, 221, 0.8);
+    animation: rotate-border 5s linear infinite;
+}
+
+@keyframes rotate-border {
+    0% {
+        box-shadow: 0px 0px 10px rgba(0, 255, 221, 0.8), 0px 0px 20px rgba(0, 255, 221, 0.8), 0px 0px 30px rgba(0, 255, 221, 0.8);
+    }
+    50% {
+        box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8), 0px 0px 30px rgba(0, 255, 221, 0.8), 0px 0px 45px rgba(0, 255, 221, 0.8);
+    }
+    100% {
+        box-shadow: 0px 0px 10px rgba(0, 255, 221, 0.8), 0px 0px 20px rgba(0, 255, 221, 0.8), 0px 0px 30px rgba(0, 255, 221, 0.8);
+    }
+}
+
+/* Timer styles */
+.timer .countdown {
+    font-size: 2.5em;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    color: #00ffdd;
+}
+
+/* Input and button styling */
+.OTP[type="number"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #00ffdd;
+    border-radius: 5px;
+    background: transparent;
+    color: white;
+    font-size: 1em;
+    text-align: center;
+}
+
+ /* Remove the arrows in Chrome, Safari, Edge, and Opera */
+ #otpInput::-webkit-outer-spin-button,
+ #otpInput::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+ }
+
+ /* Remove the arrows in Firefox */
+ #otpInput[type="number"] {
+   -moz-appearance: textfield;
+ }
+
+button {
+    width: 100%;
+    padding: 50px;
+    border: none;
+    border-radius: 5px;
+    background-color: #00ffdd;
+    color: #141e30;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.3s;
+}
+
+button:hover {
+    padding: 1rem;
+    color: #141e30;
+    font-weight: bold;
+    background-color: #00e6ca;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #00ffdd;
+}

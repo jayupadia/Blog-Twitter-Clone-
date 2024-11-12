@@ -1,0 +1,75 @@
+/* Rotating neon border */
+.rotating-border {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border-radius: 12px;
+    pointer-events: none; /* Ensures it doesn't interfere with form elements */
+    z-index: -1;
+  }
+  
+  .rotating-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff);
+    background-size: 400% 400%;
+    animation: rotateBorder 8s linear infinite;
+    mix-blend-mode: screen; /* Makes neon effect stand out */
+  }
+  
+  @keyframes rotateBorder {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Background container with cursor-following color change */
+  #background {
+    background: #111; /* Initial background */
+    transition: background 0.1s;
+  }
+  
+  #background.active {
+    background: radial-gradient(circle, #111, #222, #333, #444);
+  }
+  
+
+  /* Enhanced input field styling */
+.custom-input {
+    width: 100%;
+    padding: 12px;
+    background-color: #222; /* Darker input background */
+    border: 1px solid #444; /* Subtle border */
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .custom-input:focus {
+    border-color: #00ffff; /* Neon-like border on focus */
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.8); /* Glow effect */
+  }
+
+  .twitter {
+    transition: filter 0.3s ease-in-out !important; /* Smooth transition */
+  }
+  
+  .twitter:hover {
+    /* box-shadow: 0 4px 8px rgba(0, 255, 255, 0.8), 0 6px 20px rgba(0, 255, 255, 0.8) !important; Drop shadow on hover */
+    filter: drop-shadow(0 4px 10px rgba(0, 255, 255, 0.8)); /* Drop shadow on hover */
+  }
+  
+ 
