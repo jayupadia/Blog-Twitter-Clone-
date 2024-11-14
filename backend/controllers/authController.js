@@ -1,17 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const OTP = require('../models/OTP'); // Import OTP model
-const { registerValidationSchema, verifyOtpValidationSchema, loginValidationSchema } = require('../validators/authValidation');
-
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
+const transporter = require('../config/nodemailer');
+const {
+    registerValidationSchema,
+    verifyOtpValidationSchema,
+    loginValidationSchema
+} = require('../validators/authValidation');
 
 // Generate OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -25,7 +21,7 @@ exports.registerUser = async (req, res) => {
 
     try {
         const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: 'User already exists' });
+        if (existingUser) return res.status(400).json({ message: 'Email Already In Use' });
 
         const otp = generateOTP();
 
@@ -34,8 +30,6 @@ exports.registerUser = async (req, res) => {
             email,
             otp,
         });
-
-        console.log(otpRecord);
 
         await otpRecord.save(); // Save OTP to MongoDB
 
@@ -48,7 +42,6 @@ exports.registerUser = async (req, res) => {
 
         transporter.sendMail(mailOptions, (error) => {
             if (error) return res.status(500).json({ message: 'Error sending OTP' });
-
             res.status(200).json({ message: 'OTP sent to your email' });
         });
     } catch (error) {
@@ -61,18 +54,31 @@ exports.verifyOTP = async (req, res) => {
     const { error } = verifyOtpValidationSchema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
-    const { email, otp } = req.body;
+    const { email, otp, name, password } = req.body;
+    if (!email || !otp || !name || !password) {
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
 
     try {
         // Fetch OTP from the database
         const otpRecord = await OTP.findOne({ email, otp });
 
-        if (!otpRecord) return res.status(400).json({ message: 'Invalid OTP or OTP expired' });
+        if (!otpRecord) {
+            return res.status(400).json({ message: 'Invalid OTP or OTP expired' });
+        }
+
+        // Check if OTP is expired (for example, 2 minutes expiry)
+        const otpCreatedAt = otpRecord.createdAt;
+        const expirationTime = 2 * 60 * 1000; // 2 minutes in milliseconds
+
+        if (Date.now() - otpCreatedAt.getTime() > expirationTime) {
+            return res.status(400).json({ message: 'OTP has expired' });
+        }
 
         // OTP is valid, now hash the password and create the user
-        const hashedPassword = await bcrypt.hash(req.body.password, parseInt(process.env.BCRYPT_SALT_ROUNDS) || 10);
+        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS) || 10);
         const newUser = new User({
-            name: req.body.name,
+            name,
             email,
             password: hashedPassword,
             isVerified: true,
@@ -82,7 +88,7 @@ exports.verifyOTP = async (req, res) => {
         // Remove the OTP record from the database after successful registration
         await OTP.deleteOne({ email });
 
-        res.status(200).json({ message: 'User verified and registered successfully' });
+        res.status(200).json({ message: 'User verified and registered successfully', redirect: true });
     } catch (error) {
         res.status(500).json({ message: 'Error registering user after OTP verification', error: error.message });
     }

@@ -7,15 +7,17 @@ const VerifyOtp = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [email] = useState(location.state?.email || '');
+    const [name] = useState(location.state?.name || '');
+    const [password] = useState(location.state?.password || '');
     const [otp, setOtp] = useState('');
     const [message, setMessage] = useState('');
 
-    // Redirect to registration if email is missing
+    // Redirect to registration if email, name, or password is missing
     useEffect(() => {
-        if (!email) {
+        if (!email || !name || !password) {
             navigate('/Signup'); // Redirect to register page
         }
-    }, [email, navigate]);
+    }, [email, name, password, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,14 +27,14 @@ const VerifyOtp = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, otp }),
+                body: JSON.stringify({ email, otp, name, password }),
             });
 
             const data = await response.json();
             setMessage(data.message);
 
-             // Check if verification was successful and redirect to login
-             if (response.ok && data.redirect) {
+            // Check if verification was successful and redirect to login
+            if (response.ok && data.redirect) {
                 navigate('/login');
             }
         } catch (error) {
@@ -52,12 +54,12 @@ const VerifyOtp = () => {
         const x = e.clientX / window.innerWidth;
         const y = e.clientY / window.innerHeight;
         background.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, #333, #222, #111)`;
-      };
-    
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         document.getElementById('background').addEventListener('mousemove', handleMouseMove);
         return () => document.getElementById('background').removeEventListener('mousemove', handleMouseMove);
-      }, []);
+    }, []);
 
     return (
         <div id="background" className="flex items-center justify-center min-h-screen relative overflow-hidden verify-otp-container">
@@ -65,15 +67,13 @@ const VerifyOtp = () => {
             <div className="timer">
                 <Countdown date={Date.now() + 120000} renderer={renderer} onComplete={() => setMessage(<p className='Time-Up'>Time is up!</p>)} />
             </div>
-            <form onSubmit={handleSubmit}  className="verify-otp-form">
-
+            <form onSubmit={handleSubmit} className="verify-otp-form">
                 <input
                     type="number"
-                    id="otpInput"
                     className='OTP'
+                    id="otpInput"
                     placeholder="OTP"
                     maxLength="6"
-                    onInput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                 />

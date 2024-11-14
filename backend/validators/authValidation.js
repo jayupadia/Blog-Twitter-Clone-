@@ -11,6 +11,8 @@ const registerValidationSchema = Joi.object({
 const verifyOtpValidationSchema = Joi.object({
     email: Joi.string().email().required(),
     otp: Joi.string().length(6).required(),
+    name: Joi.string().min(3).required(),  // add this line
+    password: Joi.string().min(6).required() // add this line
 });
 
 // Login Validation Schema

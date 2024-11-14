@@ -72,4 +72,52 @@
     filter: drop-shadow(0 4px 10px rgba(0, 255, 255, 0.8)); /* Drop shadow on hover */
   }
   
+
+/* Register.css */
+
+/* Style for the popup message */
+.popup-message {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%); /* Center vertically */
+  padding: 15px;
+  background-color: #f44336; /* Red for error message */
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  opacity: 0; /* Initially hidden */
+  visibility: hidden; /* Initially hidden */
+  animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards; /* Slide in, then fade out */
+}
+
+.popup-message.success {
+  background-color: #4caf50; /* Green for success message */
+}
+
+.popup-message.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-50%) translateX(100%); /* Start from right off-screen */
+  }
+  100% {
+    transform: translateY(-50%) translateX(0); /* End in the correct position */
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
  

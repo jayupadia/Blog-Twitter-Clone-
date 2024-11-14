@@ -4,26 +4,47 @@ import { useNavigate } from 'react-router-dom';
 import image from '../assets/pngegg.png';
 import './style/Register.css';
 import Navbar from '../components/Navbar'; // Import the Navbar
-
+import { Circles } from 'react-loader-spinner'; // Import a loader spinner
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false); // Track loading state
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading state to true before submitting
+
     try {
       const data = await registerUser(name, email, password);
       setMessage(data.message);
-      navigate('/verify-otp', { state: { email } });
+      setLoading(false); // Reset loading state after success
+      navigate('/verify-otp', { state: { email, name, password } });
     } catch (error) {
-      setMessage('Registration failed');
-      console.error('Registration error:', error.response ? error.response.data : error.message);
+      setLoading(false); // Reset loading state on error
+
+      // Check if the error response is available and has a message
+      const errorMessage = error.response && error.response.data && error.response.data.message
+        ? error.response.data.message
+        : 'Registration failed';
+
+      setMessage(errorMessage);
+      console.error('Registration error:', errorMessage);
     }
   };
+
+  // UseEffect to handle hiding the popup after 5 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+      }, 5000); // Hide the popup after 5 seconds
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+  }, [message]);
 
   const handleMouseMove = (e) => {
     const background = document.getElementById('background');
@@ -69,10 +90,14 @@ const Register = () => {
               className="custom-input mb-4"
               required
             />
-            <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded">
-              Register
+            <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded" disabled={loading}>
+              {loading ? 'Registering...' : 'Register'} {/* Show "Registering..." when loading */}
             </button>
-            {message && <p className="mt-4 text-red-500">{message}</p>}
+            {loading && (
+              <div className="flex justify-center mt-4">
+                <Circles height="30" width="30" color="#4fa94d" ariaLabel="loading" />
+              </div>
+            )}
           </form>
         </div>
         <div className="w-1/3">
@@ -83,6 +108,13 @@ const Register = () => {
           />
         </div>
       </div>
+
+      {/* Popup message */}
+      {message && (
+        <div className={`popup-message ${message.includes('failed') ? 'error' : 'success'} show`}>
+          {message}
+        </div>
+      )}
     </div>
   );
 };
