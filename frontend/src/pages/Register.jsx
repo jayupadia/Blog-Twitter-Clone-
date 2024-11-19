@@ -23,6 +23,10 @@ const Register = () => {
       setMessage(data.message);
       setLoading(false); // Reset loading state after success
       navigate('/verify-otp', { state: { email, name, password } });
+
+      // Show alert for OTP sent successfully
+      alert("OTP is sent successfully to your email!");
+
     } catch (error) {
       setLoading(false); // Reset loading state on error
 

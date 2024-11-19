@@ -17,6 +17,7 @@ const App = () => {
         
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin-dashboard" element={<ProtectedRoute element={<AdminDashboard />} />} />
         <Route path="/Signup" element={<Register />} />
         <Route path="/verify-otp" element={<VerifyOtp />} /> {/* Add this line */}
         {/* Protect the admin dashboard */}

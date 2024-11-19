@@ -40,4 +40,34 @@
     box-shadow: 0 0 8px rgba(0, 255, 255, 0.8)!important;; /* Glow effect */
     
   }
+
+  .bubble-message {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-50%);
+    background: rgba(0, 150, 255, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 150, 255, 0.4);
+    animation: bubble-float 5s ease-in-out forwards;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  @keyframes bubble-float {
+    0% {
+      opacity: 1;
+      transform: translateY(-50%);
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-150%);
+    }
+  }
+  
   

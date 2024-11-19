@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Countdown from 'react-countdown';
 import './style/VerifyOtp.css';
@@ -11,6 +11,7 @@ const VerifyOtp = () => {
     const [password] = useState(location.state?.password || '');
     const [otp, setOtp] = useState('');
     const [message, setMessage] = useState('');
+    const [endTime] = useState(Date.now() + 120000); // Set the countdown end time once
 
     // Redirect to registration if email, name, or password is missing
     useEffect(() => {
@@ -35,6 +36,7 @@ const VerifyOtp = () => {
 
             // Check if verification was successful and redirect to login
             if (response.ok && data.redirect) {
+                alert("Your credentials have been sent to your email.");
                 navigate('/login');
             }
         } catch (error) {
@@ -65,12 +67,16 @@ const VerifyOtp = () => {
         <div id="background" className="flex items-center justify-center min-h-screen relative overflow-hidden verify-otp-container">
             <h2>Verify OTP</h2>
             <div className="timer">
-                <Countdown date={Date.now() + 120000} renderer={renderer} onComplete={() => setMessage(<p className='Time-Up'>Time is up!</p>)} />
+                <Countdown 
+                    date={endTime} // Static countdown end time
+                    renderer={renderer} 
+                    onComplete={() => setMessage(<p className='Time-Up'>Time is up!</p>)} 
+                />
             </div>
             <form onSubmit={handleSubmit} className="verify-otp-form">
                 <input
                     type="number"
-                    className='OTP'
+                    className="OTP"
                     id="otpInput"
                     placeholder="OTP"
                     maxLength="6"

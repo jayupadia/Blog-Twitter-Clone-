@@ -88,6 +88,33 @@ exports.verifyOTP = async (req, res) => {
         // Remove the OTP record from the database after successful registration
         await OTP.deleteOne({ email });
 
+         // Prepare and send the email with user credentials
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Account Registration Successful',
+            html: `
+                <h1>Welcome to Our Platform!</h1>
+                <p>Dear ${name},</p>
+                <p>Your account has been successfully registered. Below are your credentials:</p>
+                <ul>
+                    <li><strong>Name:</strong> ${name}</li>
+                    <li><strong>Email:</strong> ${email}</li>
+                    <li><strong>Password:</strong> ${password}</li>
+                </ul>
+                <p>Please keep this information secure.</p>
+                <p>Thank you for joining us!</p>
+            `,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                return res.status(500).json({ message: 'User registered, but failed to send credentials email' });
+            }
+            console.log('Email sent: ' + info.response);
+        });
+
         res.status(200).json({ message: 'User verified and registered successfully', redirect: true });
     } catch (error) {
         res.status(500).json({ message: 'Error registering user after OTP verification', error: error.message });
@@ -110,9 +137,9 @@ exports.loginUser = async (req, res) => {
 
         if (!user.isVerified) return res.status(401).json({ message: 'User is not verified. Please complete OTP verification.' });
 
-        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.status(200).json({ token });
+        res.status(200).json({ token, role: user.role });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
