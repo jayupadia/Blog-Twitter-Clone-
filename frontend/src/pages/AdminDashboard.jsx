@@ -1,31 +1,27 @@
 import { useEffect, useState } from 'react';
-import {
-    fetchStats,
-    fetchLikes,
-    fetchComments,
-    toggleAdminBlock,
-    deleteBlog,
-    deleteComment,
-} from '../services/api'; // Import the API functions
+import { useNavigate } from 'react-router-dom';
+import { fetchStats, fetchLikes, fetchComments, toggleAdminBlock, deleteComment, logoutAdmin } from '../services/api';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [likes, setLikes] = useState([]);
     const [comments, setComments] = useState([]);
-    const [adminMessage, setAdminMessage] = useState('');
+    const token = localStorage.getItem('token'); // Retrieve token from localStorage
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-
-        // Fetch statistics, likes, and comments
         const fetchData = async () => {
             try {
                 const statsData = await fetchStats(token);
-                const likesData = await fetchLikes(token);
-                const commentsData = await fetchComments(token);
-
+                console.log("Stats data:", statsData); // Add console log
                 setStats(statsData);
+
+                const likesData = await fetchLikes(token);
+                console.log("Likes data:", likesData); // Add console log
                 setLikes(likesData);
+
+                const commentsData = await fetchComments(token);
+                console.log("Comments data:", commentsData); // Add console log
                 setComments(commentsData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -33,35 +29,35 @@ const AdminDashboard = () => {
         };
 
         fetchData();
-    }, []);
+    }, [token]);
 
     const handleBlockAdmin = async (adminId, block) => {
-        const token = localStorage.getItem('token');
         try {
             await toggleAdminBlock(token, adminId, block);
-            setAdminMessage(block ? 'Admin blocked successfully' : 'Admin unblocked successfully');
+            // Optionally, refresh data or provide feedback to the user
         } catch (error) {
-            console.error('Error toggling admin block:', error);
-        }
-    };
-
-    const handleDeleteBlog = async (blogId) => {
-        const token = localStorage.getItem('token');
-        try {
-            await deleteBlog(token, blogId);
-            setAdminMessage('Blog deleted successfully');
-        } catch (error) {
-            console.error('Error deleting blog:', error);
+            console.error('Error blocking/unblocking admin:', error);
         }
     };
 
     const handleDeleteComment = async (commentId) => {
-        const token = localStorage.getItem('token');
         try {
             await deleteComment(token, commentId);
-            setAdminMessage('Comment deleted successfully');
+            setComments(comments.filter(comment => comment._id !== commentId));
         } catch (error) {
             console.error('Error deleting comment:', error);
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logoutAdmin(token);
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            navigate('/login');
+            console.log('Logout successful');
+        } catch (error) {
+            console.error('Error logging out:', error);
         }
     };
 
@@ -81,7 +77,7 @@ const AdminDashboard = () => {
             {/* Display likes */}
             <h2 className="text-2xl mt-6">Likes</h2>
             <ul>
-                {likes.map((like, index) => (
+                {likes && likes.length > 0 && likes.map((like, index) => (
                     <li key={index}>
                         Blog {like.blogId}: {like.likes} likes
                     </li>
@@ -91,7 +87,7 @@ const AdminDashboard = () => {
             {/* Display comments */}
             <h2 className="text-2xl mt-6">Comments</h2>
             <ul>
-                {comments.map((comment, index) => (
+                {comments && comments.length > 0 && comments.map((comment, index) => (
                     <li key={index}>
                         {comment.user.name}: {comment.content}
                         <button
@@ -111,6 +107,9 @@ const AdminDashboard = () => {
             </button>
             <button onClick={() => handleBlockAdmin('adminIdHere', false)} className="text-green-500">
                 Unblock Admin
+            </button>
+            <button onClick={handleLogout} className="text-blue-500">
+                Logout
             </button>
         </div>
     );

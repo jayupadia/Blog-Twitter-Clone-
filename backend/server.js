@@ -24,9 +24,11 @@ connectDB();
 
 // Import the auth routes
 const authRoutes = require('./routes/authRoutes'); // Path to your auth routes
+const adminRoutes = require('./routes/adminRoutes'); // Ensure this line is present
 
 // Use the auth routes
 app.use('/api/auth', authRoutes); // Mount the auth routes at /api/auth
+app.use('/api/admin', adminRoutes); // Ensure this line is present
 
 app.get('/', (req, res) => {
   res.send('Server is running...');

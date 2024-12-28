@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
+import { AuthContext } from "../App";
 import Navbar from "../components/Navbar";
 import "./style/Login.css";
 
@@ -9,6 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
+  const { setIsAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,14 +18,20 @@ const Login = () => {
     try {
       const data = await loginUser(email, password);
       localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      console.log("Token:", data.token); // Add console log
+      console.log("Role:", data.role); // Add console log
       setMessage("Login successful");
       setShowMessage(true);
 
-      // Check the role and navigate accordingly
+      setIsAuthenticated(true);
 
+      // Check the role and navigate accordingly
       if (data.role === "admin") {
+        console.log("Navigating to /admin-dashboard");
         navigate("/admin-dashboard"); // Redirect to admin dashboard
       } else {
+        console.log("Navigating to /user-dashboard");
         navigate("/user-dashboard"); // Redirect to user dashboard
       }
     } catch (error) {
@@ -50,10 +58,6 @@ const Login = () => {
     document
       .getElementById("background")
       .addEventListener("mousemove", handleMouseMove);
-    return () =>
-      document
-        .getElementById("background")
-        .removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return (

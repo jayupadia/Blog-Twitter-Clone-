@@ -70,3 +70,15 @@ export const deleteComment = async (token, commentId) => {
     });
     return response.data;
 };
+
+// Logout admin
+export const logoutAdmin = async (token) => {
+    try {
+        const response = await axios.post(`${API_URL}/admin/logout`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error during logout');
+    }
+};

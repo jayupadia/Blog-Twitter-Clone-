@@ -2,8 +2,7 @@ const User = require('../models/User');
 const Blog = require('../models/Blog');
 const Comment = require('../models/Comment'); // Assuming you have a Comment model
 
-// Get all likes (assuming each blog has a likes array)
-exports.getLikes = async (req, res) => {
+const getLikes = async (req, res) => {
     try {
         const blogs = await Blog.find().populate('likes'); // Assuming likes is an array of user IDs
         const likes = blogs.map(blog => ({
@@ -18,8 +17,7 @@ exports.getLikes = async (req, res) => {
     }
 };
 
-// Get all comments (with users who commented)
-exports.getComments = async (req, res) => {
+const getComments = async (req, res) => {
     try {
         const comments = await Comment.find().populate('user'); // Assuming comments have a user reference
         res.status(200).json(comments);
@@ -28,8 +26,7 @@ exports.getComments = async (req, res) => {
     }
 };
 
-// Block/Unblock an admin
-exports.toggleAdminBlock = async (req, res) => {
+const toggleAdminBlock = async (req, res) => {
     const { adminId, block } = req.body; // block will be true or false
 
     try {
@@ -45,8 +42,7 @@ exports.toggleAdminBlock = async (req, res) => {
     }
 };
 
-// Delete a harmful blog
-exports.deleteBlog = async (req, res) => {
+const deleteBlog = async (req, res) => {
     const { blogId } = req.params;
 
     try {
@@ -60,8 +56,7 @@ exports.deleteBlog = async (req, res) => {
     }
 };
 
-// Delete a harmful comment
-exports.deleteComment = async (req, res) => {
+const deleteComment = async (req, res) => {
     const { commentId } = req.params;
 
     try {
@@ -73,4 +68,22 @@ exports.deleteComment = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error deleting comment', error: error.message });
     }
+};
+
+const logout = async (req, res) => {
+    try {
+        // Invalidate the token or perform any necessary logout operations
+        res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+        res.status(500).json({ message: 'Logout failed', error: error.message });
+    }
+};
+
+module.exports = {
+    getLikes,
+    getComments,
+    toggleAdminBlock,
+    deleteBlog,
+    deleteComment,
+    logout, // Export the logout function
 };
