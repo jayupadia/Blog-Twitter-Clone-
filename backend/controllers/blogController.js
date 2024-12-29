@@ -1,5 +1,6 @@
 const Blog = require('../models/Blog');
 const User = require('../models/User');
+const Comment = require('../models/Comment'); // Add this line
 
 // Create a blog post
 exports.createBlog = async (req, res) => {
@@ -32,8 +33,18 @@ exports.commentBlog = async (req, res) => {
     const { comment } = req.body;
     try {
         const blog = await Blog.findById(req.params.id);
-        blog.comments.push({ user: req.user.userId, comment });
+        if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+        const newComment = new Comment({
+            content: comment,
+            user: req.user.userId,
+            blog: blog._id
+        });
+        await newComment.save();
+
+        blog.comments.push(newComment._id);
         await blog.save();
+
         res.status(200).json({ message: 'Comment added' });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -44,10 +55,19 @@ exports.commentBlog = async (req, res) => {
 exports.replyComment = async (req, res) => {
     const { commentId, reply } = req.body;
     try {
-        const blog = await Blog.findById(req.params.id);
-        const comment = blog.comments.id(commentId);
-        comment.replies.push({ user: req.user.userId, reply });
-        await blog.save();
+        const comment = await Comment.findById(commentId);
+        if (!comment) return res.status(404).json({ message: 'Comment not found' });
+
+        const newReply = new Comment({
+            content: reply,
+            user: req.user.userId,
+            blog: comment.blog
+        });
+        await newReply.save();
+
+        comment.replies.push(newReply._id);
+        await comment.save();
+
         res.status(200).json({ message: 'Reply added' });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });

@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const Blog = require('../models/Blog');
-const Comment = require('../models/Comment'); // Assuming you have a Comment model
+const Comment = require('../models/Comment'); // Re-add this line
 
 const getLikes = async (req, res) => {
     try {
@@ -81,9 +81,9 @@ const logout = async (req, res) => {
 
 module.exports = {
     getLikes,
-    getComments,
+    getComments, // Re-add this line
     toggleAdminBlock,
     deleteBlog,
-    deleteComment,
+    deleteComment, // Re-add this line
     logout, // Export the logout function
 };

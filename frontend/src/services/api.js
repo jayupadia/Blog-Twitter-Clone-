@@ -82,3 +82,37 @@ export const logoutAdmin = async (token) => {
         throw new Error(error.response?.data?.message || 'Error during logout');
     }
 };
+
+// Edit user profile
+export const editProfile = async (token, profile) => {
+    const response = await axios.put(`${API_URL}/user/edit-profile`, profile, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Create a new blog
+export const createBlog = async (token, blog) => {
+    const response = await axios.post(`${API_URL}/user/create`, blog, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Search profiles
+export const searchProfiles = async (token, query) => {
+    const response = await axios.get(`${API_URL}/user/search`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { q: query },
+    });
+    return response.data.profiles;
+};
+
+// Search blogs
+export const searchBlogs = async (token, query) => {
+    const response = await axios.get(`${API_URL}/user/search`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { q: query },
+    });
+    return response.data.blogs;
+};

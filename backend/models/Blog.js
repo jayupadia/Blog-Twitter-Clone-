@@ -5,18 +5,7 @@ const blogSchema = new mongoose.Schema({
     content: { type: String, required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    comments: [
-        {
-            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            comment: { type: String },
-            replies: [
-                {
-                    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-                    reply: { type: String },
-                }
-            ]
-        }
-    ]
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 }, { timestamps: true });
 
 const Blog = mongoose.model('Blog', blogSchema);
